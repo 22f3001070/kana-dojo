@@ -27,6 +27,22 @@
       ]
     },
     {
+      "source": "/:path((?!_next|api|sounds|kanji|vocab|wallpapers).*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept",
+          "value": ".*text/html.*"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/sounds/(.*)",
       "headers": [
         {
