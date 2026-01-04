@@ -32,14 +32,15 @@ const kanaGroups = [
       { name: 'KYoon', sliceRange: [41, 52] },
       { name: 'KForeign Sounds', sliceRange: [52, 60] }
     ]
-  },
-  {
-    name: 'Challenge チャレンジ',
-    subsets: [
-      { name: 'CSimilar Hiragana', sliceRange: [60, 65] },
-      { name: 'CConfusing Katakana', sliceRange: [65, 69] }
-    ]
   }
+  // TEMPORARILY COMMENTED OUT - Challenge section
+  // {
+  //   name: 'Challenge チャレンジ',
+  //   subsets: [
+  //     { name: 'CSimilar Hiragana', sliceRange: [60, 65] },
+  //     { name: 'CConfusing Katakana', sliceRange: [65, 69] }
+  //   ]
+  // }
 ];
 
 const getDefaultHiddenSubsets = () => {
@@ -102,7 +103,7 @@ const KanaCards = () => {
     );
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row w-full sm:items-start">
+    <div className='flex w-full flex-col gap-2 sm:flex-row sm:items-start'>
       {kanaGroups.map(group => {
         const groupHidden = isHidden(group.name);
         const [mainTitle, japaneseTitle] = group.name.split(' ');
@@ -111,19 +112,19 @@ const KanaCards = () => {
           <Fragment key={group.name}>
             <form
               className={clsx(
-                'flex flex-col w-full gap-2 sm:w-1/2 p-4',
+                'flex w-full flex-col gap-2 p-4 sm:w-1/2',
                 cardBorderStyles
               )}
             >
               {/* Group Header */}
               <legend
-                className="group text-2xl hover:cursor-pointer flex flex-row items-center gap-1"
+                className='group flex flex-row items-center gap-1 text-2xl hover:cursor-pointer'
                 onClick={() => toggleVisibility(group.name)}
               >
                 <ChevronUp className={chevronClasses(groupHidden)} />
-                <h3 className="flex items-center gap-2">
+                <h3 className='flex items-center gap-2'>
                   <span>{mainTitle}</span>
-                  <span className="text-[var(--secondary-color)]">
+                  <span className='text-[var(--secondary-color)]'>
                     {japaneseTitle}
                   </span>
                 </h3>
@@ -138,12 +139,12 @@ const KanaCards = () => {
                   return (
                     <div
                       key={subset.name}
-                      className="flex flex-col w-full gap-2"
+                      className='flex w-full flex-col gap-2'
                     >
                       <div>
                         {/* Subset Header */}
                         <h4
-                          className="group text-xl hover:cursor-pointer flex flex-row items-center gap-1"
+                          className='group flex flex-row items-center gap-1 text-xl hover:cursor-pointer'
                           onClick={() => toggleVisibility(subset.name)}
                         >
                           <ChevronUp
@@ -165,7 +166,7 @@ const KanaCards = () => {
 
                       {/* Divider (except after last subset) */}
                       {!isLastSubset && (
-                        <hr className="border-t-1 border-[var(--border-color)]" />
+                        <hr className='border-t-1 border-[var(--border-color)]' />
                       )}
                     </div>
                   );
