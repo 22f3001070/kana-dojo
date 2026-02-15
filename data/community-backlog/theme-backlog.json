@@ -691,7 +691,9 @@
     "mainColor": "oklch(70.0% 0.145 150.0 / 1)",
     "secondaryColor": "oklch(78.0% 0.095 140.0 / 1)",
     "issued": true,
-    "completed": false
+    "completed": true,
+    "completedBy": "negativ14",
+    "completedPR": 4929
   },
   {
     "id": "sunset-train",
