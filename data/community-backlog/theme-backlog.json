@@ -761,7 +761,9 @@
     "mainColor": "oklch(70.0% 0.145 20.0 / 1)",
     "secondaryColor": "oklch(68.0% 0.095 75.0 / 1)",
     "issued": false,
-    "completed": false
+    "completed": true,
+    "completedBy": "Godson-Ozioma",
+    "completedPR": 5019
   },
   {
     "id": "holographic-idol",
