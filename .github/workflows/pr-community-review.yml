@@ -21,7 +21,7 @@ jobs:
     # Skip automation PRs to save GitHub Actions minutes - only review external contributor PRs
     if: |
       !startsWith(github.event.pull_request.head.ref, 'automation/') &&
-      (contains(github.event.pull_request.title, 'theme') || contains(github.event.pull_request.title, 'fact') || contains(github.event.pull_request.title, 'Theme') || contains(github.event.pull_request.title, 'Fact') || contains(github.event.pull_request.title, 'proverb') || contains(github.event.pull_request.title, 'Proverb') || contains(github.event.pull_request.title, 'trivia') || contains(github.event.pull_request.title, 'Trivia') || contains(github.event.pull_request.title, 'grammar') || contains(github.event.pull_request.title, 'Grammar') || contains(github.event.pull_request.title, 'anime quote') || contains(github.event.pull_request.title, 'Anime Quote') || contains(github.event.pull_request.title, 'anime-quote') || contains(github.event.pull_request.title, 'Anime-Quote') || contains(github.event.pull_request.title, 'idiom') || contains(github.event.pull_request.title, 'Idiom') || contains(github.event.pull_request.title, 'regional dialect') || contains(github.event.pull_request.title, 'Regional Dialect') || contains(github.event.pull_request.title, 'regional-dialect') || contains(github.event.pull_request.title, 'Regional-Dialect'))
+      (contains(github.event.pull_request.title, 'theme') || contains(github.event.pull_request.title, 'fact') || contains(github.event.pull_request.title, 'Theme') || contains(github.event.pull_request.title, 'Fact') || contains(github.event.pull_request.title, 'proverb') || contains(github.event.pull_request.title, 'Proverb') || contains(github.event.pull_request.title, 'trivia') || contains(github.event.pull_request.title, 'Trivia') || contains(github.event.pull_request.title, 'grammar') || contains(github.event.pull_request.title, 'Grammar') || contains(github.event.pull_request.title, 'anime quote') || contains(github.event.pull_request.title, 'Anime Quote') || contains(github.event.pull_request.title, 'anime-quote') || contains(github.event.pull_request.title, 'Anime-Quote') || contains(github.event.pull_request.title, 'idiom') || contains(github.event.pull_request.title, 'Idiom') || contains(github.event.pull_request.title, 'regional dialect') || contains(github.event.pull_request.title, 'Regional Dialect') || contains(github.event.pull_request.title, 'regional-dialect') || contains(github.event.pull_request.title, 'Regional-Dialect') || contains(github.event.pull_request.title, 'false friend') || contains(github.event.pull_request.title, 'False Friend') || contains(github.event.pull_request.title, 'cultural etiquette') || contains(github.event.pull_request.title, 'Cultural Etiquette') || contains(github.event.pull_request.title, 'example sentence') || contains(github.event.pull_request.title, 'Example Sentence') || contains(github.event.pull_request.title, 'common mistake') || contains(github.event.pull_request.title, 'Common Mistake'))
 
     steps:
       - name: Checkout base branch
@@ -100,8 +100,12 @@ jobs:
             const isAnimeQuoteContribution = prTitleLower.includes('anime quote') || prTitleLower.includes('anime-quote') || prTitleLower.includes('animequote');
             const isIdiomContribution = prTitleLower.includes('idiom');
             const isRegionalDialectContribution = prTitleLower.includes('regional dialect') || prTitleLower.includes('regional-dialect') || prTitleLower.includes('regionaldialect');
+            const isFalseFriendContribution = prTitleLower.includes('false friend') || prTitleLower.includes('false-friend');
+            const isCulturalEtiquetteContribution = prTitleLower.includes('cultural etiquette') || prTitleLower.includes('cultural-etiquette');
+            const isExampleSentenceContribution = prTitleLower.includes('example sentence') || prTitleLower.includes('example-sentence');
+            const isCommonMistakeContribution = prTitleLower.includes('common mistake') || prTitleLower.includes('common-mistake');
 
-            if (!isThemeContribution && !isFactContribution && !isProverbContribution && !isTriviaContribution && !isGrammarContribution && !isAnimeQuoteContribution && !isIdiomContribution && !isRegionalDialectContribution) {
+            if (!isThemeContribution && !isFactContribution && !isProverbContribution && !isTriviaContribution && !isGrammarContribution && !isAnimeQuoteContribution && !isIdiomContribution && !isRegionalDialectContribution && !isFalseFriendContribution && !isCulturalEtiquetteContribution && !isExampleSentenceContribution && !isCommonMistakeContribution) {
               console.log('Not a community contribution PR');
               return;
             }
@@ -223,6 +227,42 @@ jobs:
                   if (matches.length > 0) {
                     foundIssue = matches[0].number;
                     console.log(`Found matching regional dialect issue: #${foundIssue}`);
+                  }
+                }
+              } else if (isFalseFriendContribution) {
+                const idMatch = prTitle.match(/#(\d+)/);
+                if (idMatch) {
+                  const id = idMatch[1];
+                  const matches = await searchOpenCommunityIssues(`"Add Japanese False Friend #${id}"`);
+                  if (matches.length > 0) {
+                    foundIssue = matches[0].number;
+                  }
+                }
+              } else if (isCulturalEtiquetteContribution) {
+                const idMatch = prTitle.match(/#(\d+)/);
+                if (idMatch) {
+                  const id = idMatch[1];
+                  const matches = await searchOpenCommunityIssues(`"Add Japanese Cultural Etiquette Tip #${id}"`);
+                  if (matches.length > 0) {
+                    foundIssue = matches[0].number;
+                  }
+                }
+              } else if (isExampleSentenceContribution) {
+                const idMatch = prTitle.match(/#(\d+)/);
+                if (idMatch) {
+                  const id = idMatch[1];
+                  const matches = await searchOpenCommunityIssues(`"Add Japanese Example Sentence #${id}"`);
+                  if (matches.length > 0) {
+                    foundIssue = matches[0].number;
+                  }
+                }
+              } else if (isCommonMistakeContribution) {
+                const idMatch = prTitle.match(/#(\d+)/);
+                if (idMatch) {
+                  const id = idMatch[1];
+                  const matches = await searchOpenCommunityIssues(`"Add Common Japanese Learner Mistake #${id}"`);
+                  if (matches.length > 0) {
+                    foundIssue = matches[0].number;
                   }
                 }
               }
@@ -563,7 +603,98 @@ jobs:
               } catch (e) {
                 errors.push(`Error reading regional dialects file: ${e.message}`);
               }
-            }
+            } else if (isFalseFriendContribution) {
+              validationType = 'false friend';
+              const allowed = ['community/content/japanese-false-friends.json'];
+              const changed = reviewedFiles.map(function(f) { return f.filename; });
+              const invalidFiles = changed.filter(function(p) { return !allowed.includes(p); });
+              if (changed.length !== 1 || invalidFiles.length > 0) {
+                errors.push('False friend PRs must modify only community/content/japanese-false-friends.json');
+              }
+              try {
+                const fp = 'pr-head/community/content/japanese-false-friends.json';
+                if (!fs.existsSync(fp)) {
+                  errors.push('japanese-false-friends.json file not found in PR');
+                } else {
+                  const items = JSON.parse(fs.readFileSync(fp, 'utf8'));
+                  if (!Array.isArray(items)) {
+                    errors.push('japanese-false-friends.json should be an array');
+                  } else if (items.some(function(i) { return !i.termA || !i.termB || !i.explanation || !i.example; })) {
+                    errors.push('Each false friend must have termA, termB, explanation, and example fields');
+                  }
+                }
+              } catch (e) {
+                errors.push(`Error reading false friends file: ${e.message}`);
+              }
+            } else if (isCulturalEtiquetteContribution) {
+              validationType = 'cultural etiquette';
+              const allowed = ['community/content/japanese-cultural-etiquette.json'];
+              const changed = reviewedFiles.map(function(f) { return f.filename; });
+              const invalidFiles = changed.filter(function(p) { return !allowed.includes(p); });
+              if (changed.length !== 1 || invalidFiles.length > 0) {
+                errors.push('Cultural etiquette PRs must modify only community/content/japanese-cultural-etiquette.json');
+              }
+              try {
+                const fp = 'pr-head/community/content/japanese-cultural-etiquette.json';
+                if (!fs.existsSync(fp)) {
+                  errors.push('japanese-cultural-etiquette.json file not found in PR');
+                } else {
+                  const items = JSON.parse(fs.readFileSync(fp, 'utf8'));
+                  if (!Array.isArray(items)) {
+                    errors.push('japanese-cultural-etiquette.json should be an array');
+                  } else if (items.some(function(i) { return !i.situation || !i.do || !i.dont || !i.note; })) {
+                    errors.push('Each etiquette item must have situation, do, dont, and note fields');
+                  }
+                }
+              } catch (e) {
+                errors.push(`Error reading cultural etiquette file: ${e.message}`);
+              }
+            } else if (isExampleSentenceContribution) {
+              validationType = 'example sentence';
+              const allowed = ['community/content/japanese-example-sentences.json'];
+              const changed = reviewedFiles.map(function(f) { return f.filename; });
+              const invalidFiles = changed.filter(function(p) { return !allowed.includes(p); });
+              if (changed.length !== 1 || invalidFiles.length > 0) {
+                errors.push('Example sentence PRs must modify only community/content/japanese-example-sentences.json');
+              }
+              try {
+                const fp = 'pr-head/community/content/japanese-example-sentences.json';
+                if (!fs.existsSync(fp)) {
+                  errors.push('japanese-example-sentences.json file not found in PR');
+                } else {
+                  const items = JSON.parse(fs.readFileSync(fp, 'utf8'));
+                  if (!Array.isArray(items)) {
+                    errors.push('japanese-example-sentences.json should be an array');
+                  } else if (items.some(function(i) { return !i.japanese || !i.romaji || !i.english || !i.jlpt; })) {
+                    errors.push('Each example sentence must have japanese, romaji, english, and jlpt fields');
+                  }
+                }
+              } catch (e) {
+                errors.push(`Error reading example sentences file: ${e.message}`);
+              }
+            } else if (isCommonMistakeContribution) {
+              validationType = 'common mistake';
+              const allowed = ['community/content/japanese-common-mistakes.json'];
+              const changed = reviewedFiles.map(function(f) { return f.filename; });
+              const invalidFiles = changed.filter(function(p) { return !allowed.includes(p); });
+              if (changed.length !== 1 || invalidFiles.length > 0) {
+                errors.push('Common mistake PRs must modify only community/content/japanese-common-mistakes.json');
+              }
+              try {
+                const fp = 'pr-head/community/content/japanese-common-mistakes.json';
+                if (!fs.existsSync(fp)) {
+                  errors.push('japanese-common-mistakes.json file not found in PR');
+                } else {
+                  const items = JSON.parse(fs.readFileSync(fp, 'utf8'));
+                  if (!Array.isArray(items)) {
+                    errors.push('japanese-common-mistakes.json should be an array');
+                  } else if (items.some(function(i) { return !i.wrong || !i.correct || !i.explanation; })) {
+                    errors.push('Each common mistake must have wrong, correct, and explanation fields');
+                  }
+                }
+              } catch (e) {
+                errors.push(`Error reading common mistakes file: ${e.message}`);
+              }
 
             isValid = errors.length === 0;
 

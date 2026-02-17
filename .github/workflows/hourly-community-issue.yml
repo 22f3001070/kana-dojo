@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       force_type:
-        description: 'Force issue type: theme | fact | proverb | trivia | grammar | animeQuote | idiom | regionalDialect'
+        description: 'Force issue type: theme | fact | proverb | trivia | grammar | animeQuote | idiom | regionalDialect | falseFriend | culturalEtiquette | exampleSentence | commonMistake'
         required: false
         type: string
       dry_run:
@@ -114,6 +114,10 @@ jobs:
             const animeQuotesBacklogPath = 'community/backlog/anime-quotes-backlog.json';
             const idiomsBacklogPath = 'community/backlog/idioms-backlog.json';
             const regionalDialectsBacklogPath = 'community/backlog/regional-dialects-backlog.json';
+            const falseFriendsBacklogPath = 'community/backlog/false-friends-backlog.json';
+            const culturalEtiquetteBacklogPath = 'community/backlog/cultural-etiquette-backlog.json';
+            const exampleSentencesBacklogPath = 'community/backlog/example-sentences-backlog.json';
+            const commonMistakesBacklogPath = 'community/backlog/common-mistakes-backlog.json';
 
             const themesSourcePath = 'community/content/community-themes.json';
             const factsSourcePath = 'community/content/japan-facts.json';
@@ -128,6 +132,10 @@ jobs:
             const animeQuotesSourcePath = 'community/content/anime-quotes.json';
             const idiomsSourcePath = 'community/content/japanese-idioms.json';
             const regionalDialectsSourcePath = 'community/content/japanese-regional-dialects.json';
+            const falseFriendsSourcePath = 'community/content/japanese-false-friends.json';
+            const culturalEtiquetteSourcePath = 'community/content/japanese-cultural-etiquette.json';
+            const exampleSentencesSourcePath = 'community/content/japanese-example-sentences.json';
+            const commonMistakesSourcePath = 'community/content/japanese-common-mistakes.json';
 
             let state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
             const themes = JSON.parse(fs.readFileSync(themeBacklogPath, 'utf8'));
@@ -138,6 +146,10 @@ jobs:
             const animeQuotes = JSON.parse(fs.readFileSync(animeQuotesBacklogPath, 'utf8'));
             const idioms = JSON.parse(fs.readFileSync(idiomsBacklogPath, 'utf8'));
             const regionalDialects = JSON.parse(fs.readFileSync(regionalDialectsBacklogPath, 'utf8'));
+            const falseFriends = JSON.parse(fs.readFileSync(falseFriendsBacklogPath, 'utf8'));
+            const culturalEtiquette = JSON.parse(fs.readFileSync(culturalEtiquetteBacklogPath, 'utf8'));
+            const exampleSentences = JSON.parse(fs.readFileSync(exampleSentencesBacklogPath, 'utf8'));
+            const commonMistakes = JSON.parse(fs.readFileSync(commonMistakesBacklogPath, 'utf8'));
 
             if (typeof state.consecutiveNoIssueRuns !== 'number') {
               state.consecutiveNoIssueRuns = 0;
@@ -217,6 +229,42 @@ jobs:
               }
             }
 
+            let existingFalseFriends = [];
+            if (fs.existsSync(falseFriendsSourcePath)) {
+              try {
+                existingFalseFriends = JSON.parse(fs.readFileSync(falseFriendsSourcePath, 'utf8'));
+              } catch (e) {
+                console.log(`Could not parse ${falseFriendsSourcePath}: ${e.message}`);
+              }
+            }
+
+            let existingCulturalEtiquette = [];
+            if (fs.existsSync(culturalEtiquetteSourcePath)) {
+              try {
+                existingCulturalEtiquette = JSON.parse(fs.readFileSync(culturalEtiquetteSourcePath, 'utf8'));
+              } catch (e) {
+                console.log(`Could not parse ${culturalEtiquetteSourcePath}: ${e.message}`);
+              }
+            }
+
+            let existingExampleSentences = [];
+            if (fs.existsSync(exampleSentencesSourcePath)) {
+              try {
+                existingExampleSentences = JSON.parse(fs.readFileSync(exampleSentencesSourcePath, 'utf8'));
+              } catch (e) {
+                console.log(`Could not parse ${exampleSentencesSourcePath}: ${e.message}`);
+              }
+            }
+
+            let existingCommonMistakes = [];
+            if (fs.existsSync(commonMistakesSourcePath)) {
+              try {
+                existingCommonMistakes = JSON.parse(fs.readFileSync(commonMistakesSourcePath, 'utf8'));
+              } catch (e) {
+                console.log(`Could not parse ${commonMistakesSourcePath}: ${e.message}`);
+              }
+            }
+
             let themesSourceContent = '';
             let existingThemes = [];
             if (fs.existsSync(themesSourcePath)) {
@@ -245,7 +293,7 @@ jobs:
               }
             }
 
-            const defaultOrder = ['theme', 'fact', 'proverb', 'trivia', 'grammar', 'animeQuote', 'idiom', 'regionalDialect'];
+            const defaultOrder = ['theme', 'fact', 'proverb', 'trivia', 'grammar', 'animeQuote', 'idiom', 'regionalDialect', 'falseFriend', 'culturalEtiquette', 'exampleSentence', 'commonMistake'];
             const typeOrder = forceType && defaultOrder.includes(forceType)
               ? [forceType]
               : defaultOrder;
@@ -740,6 +788,283 @@ jobs:
               const dialectIndex = regionalDialects.findIndex(function(d) { return d.id === item.id; });
               regionalDialects[dialectIndex].issued = true;
               fs.writeFileSync(regionalDialectsBacklogPath, JSON.stringify(regionalDialects, null, 2));
+              backlogChanged = true;
+            } else if (nextType === 'falseFriend') {
+              item = falseFriends.find(function(f) {
+                if (f.issued || f.completed) {
+                  return false;
+                }
+                if (Array.isArray(existingFalseFriends)) {
+                  const exists = existingFalseFriends.some(function(ef) {
+                    if (!ef || typeof ef !== 'object') {
+                      return false;
+                    }
+                    return ef.termA === f.termA && ef.termB === f.termB;
+                  });
+                  if (exists) {
+                    const falseFriendIdx = falseFriends.findIndex(function(fi) { return fi.id === f.id; });
+                    falseFriends[falseFriendIdx].completed = true;
+                    backlogChanged = true;
+                    return false;
+                  }
+                }
+                return true;
+              });
+
+              if (!item) {
+                console.log('No more false friends available in backlog.');
+                if (backlogChanged) {
+                  fs.writeFileSync(falseFriendsBacklogPath, JSON.stringify(falseFriends, null, 2));
+                }
+                continue;
+              }
+
+              const duplicateFalseFriend = await hasOpenIssueForQuery(`"Japanese False Friend" "${item.id}"`);
+              if (duplicateFalseFriend) {
+                const falseFriendIdx = falseFriends.findIndex(function(f) { return f.id === item.id; });
+                falseFriends[falseFriendIdx].issued = true;
+                fs.writeFileSync(falseFriendsBacklogPath, JSON.stringify(falseFriends, null, 2));
+                backlogChanged = true;
+                continue;
+              }
+
+              const tmpl = t.falseFriend;
+              const common = t.common;
+              issueTitle = tmpl.title
+                .replace('{emoji}', pickEmoji())
+                .replace('{id}', item.id);
+              issueTitle = addTitleAdjectives(issueTitle, tmpl.adjectives);
+
+              const instructions = t.buildInstructions(tmpl.file, tmpl.itemType, tmpl.prTitle).map((instr, i) => `${i + 1}. ${instr.replace(/{id}/g, item.id)}`);
+              const codeBlock = `\`\`\`json
+{
+  "termA": "${item.termA}",
+  "termB": "${item.termB}",
+  "explanation": "${item.explanation}",
+  "example": "${item.example}"
+}
+\`\`\``;
+
+              issueBody = `${tmpl.header}\n\n**Category:** ${tmpl.category}  \n**Difficulty:** ${common.difficulty}  \n**Estimated Time:** ${tmpl.estimatedTime}\n\n---\n\n### Your Task\n\n${tmpl.taskDescription}\n\n${tmpl.falseFriendHeader}\n\n**Term A:** ${item.termA}  \n**Term B:** ${item.termB}\n\n> **Explanation:** ${item.explanation}\n> **Example:** ${item.example}\n\n${common.instructionsHeader}\n\n${instructions.slice(0, 5).join('\n')}\n\n${codeBlock}\n\n${instructions.slice(5).join('\n')}\n\n---\n\n${common.footer}`;
+
+              const falseFriendIndex = falseFriends.findIndex(function(f) { return f.id === item.id; });
+              falseFriends[falseFriendIndex].issued = true;
+              fs.writeFileSync(falseFriendsBacklogPath, JSON.stringify(falseFriends, null, 2));
+              backlogChanged = true;
+            } else if (nextType === 'culturalEtiquette') {
+              item = culturalEtiquette.find(function(e) {
+                if (e.issued || e.completed) {
+                  return false;
+                }
+                if (Array.isArray(existingCulturalEtiquette)) {
+                  const exists = existingCulturalEtiquette.some(function(ec) {
+                    if (!ec || typeof ec !== 'object') {
+                      return false;
+                    }
+                    return ec.situation === e.situation && ec.do === e.do && ec.dont === e.dont;
+                  });
+                  if (exists) {
+                    const etiquetteIdx = culturalEtiquette.findIndex(function(ei) { return ei.id === e.id; });
+                    culturalEtiquette[etiquetteIdx].completed = true;
+                    backlogChanged = true;
+                    return false;
+                  }
+                }
+                return true;
+              });
+
+              if (!item) {
+                console.log('No more cultural etiquette entries available in backlog.');
+                if (backlogChanged) {
+                  fs.writeFileSync(culturalEtiquetteBacklogPath, JSON.stringify(culturalEtiquette, null, 2));
+                }
+                continue;
+              }
+
+              const duplicateEtiquette = await hasOpenIssueForQuery(`"Cultural Etiquette Tip" "${item.id}"`);
+              if (duplicateEtiquette) {
+                const etiquetteIdx = culturalEtiquette.findIndex(function(e) { return e.id === item.id; });
+                culturalEtiquette[etiquetteIdx].issued = true;
+                fs.writeFileSync(culturalEtiquetteBacklogPath, JSON.stringify(culturalEtiquette, null, 2));
+                backlogChanged = true;
+                continue;
+              }
+
+              const tmpl = t.culturalEtiquette;
+              const common = t.common;
+              issueTitle = tmpl.title
+                .replace('{emoji}', pickEmoji())
+                .replace('{id}', item.id);
+              issueTitle = addTitleAdjectives(issueTitle, tmpl.adjectives);
+
+              const instructions = t.buildInstructions(tmpl.file, tmpl.itemType, tmpl.prTitle).map((instr, i) => `${i + 1}. ${instr.replace(/{id}/g, item.id)}`);
+              const codeBlock = `\`\`\`json
+{
+  "situation": "${item.situation}",
+  "do": "${item.do}",
+  "dont": "${item.dont}",
+  "note": "${item.note}"
+}
+\`\`\``;
+
+              issueBody = `${tmpl.header}\n\n**Category:** ${tmpl.category}  \n**Difficulty:** ${common.difficulty}  \n**Estimated Time:** ${tmpl.estimatedTime}\n\n---\n\n### Your Task\n\n${tmpl.taskDescription}\n\n${tmpl.etiquetteHeader}\n\n**Situation:** ${item.situation}\n\n- Do: ${item.do}\n- Avoid: ${item.dont}\n\n> **Note:** ${item.note}\n\n${common.instructionsHeader}\n\n${instructions.slice(0, 5).join('\n')}\n\n${codeBlock}\n\n${instructions.slice(5).join('\n')}\n\n---\n\n${common.footer}`;
+
+              const etiquetteIndex = culturalEtiquette.findIndex(function(e) { return e.id === item.id; });
+              culturalEtiquette[etiquetteIndex].issued = true;
+              fs.writeFileSync(culturalEtiquetteBacklogPath, JSON.stringify(culturalEtiquette, null, 2));
+              backlogChanged = true;
+            } else if (nextType === 'exampleSentence') {
+              item = exampleSentences.find(function(e) {
+                if (e.issued || e.completed) {
+                  return false;
+                }
+                if (Array.isArray(existingExampleSentences)) {
+                  const exists = existingExampleSentences.some(function(es) {
+                    if (!es || typeof es !== 'object') {
+                      return false;
+                    }
+                    return es.japanese === e.japanese && es.romaji === e.romaji && es.english === e.english;
+                  });
+                  if (exists) {
+                    const sentenceIdx = exampleSentences.findIndex(function(si) { return si.id === e.id; });
+                    exampleSentences[sentenceIdx].completed = true;
+                    backlogChanged = true;
+                    return false;
+                  }
+                }
+                return true;
+              });
+
+              if (!item) {
+                console.log('No more example sentences available in backlog.');
+                if (backlogChanged) {
+                  fs.writeFileSync(exampleSentencesBacklogPath, JSON.stringify(exampleSentences, null, 2));
+                }
+                continue;
+              }
+
+              const duplicateSentence = await hasOpenIssueForQuery(`"Example Sentence" "${item.id}"`);
+              if (duplicateSentence) {
+                const sentenceIdx = exampleSentences.findIndex(function(e) { return e.id === item.id; });
+                exampleSentences[sentenceIdx].issued = true;
+                fs.writeFileSync(exampleSentencesBacklogPath, JSON.stringify(exampleSentences, null, 2));
+                backlogChanged = true;
+                continue;
+              }
+
+              const tmpl = t.exampleSentence;
+              const common = t.common;
+              issueTitle = tmpl.title
+                .replace('{emoji}', pickEmoji())
+                .replace('{id}', item.id);
+              issueTitle = addTitleAdjectives(issueTitle, tmpl.adjectives);
+
+              const instructions = t.buildInstructions(tmpl.file, tmpl.itemType, tmpl.prTitle).map((instr, i) => `${i + 1}. ${instr.replace(/{id}/g, item.id)}`);
+              const codeBlock = `\`\`\`json
+{
+  "japanese": "${item.japanese}",
+  "romaji": "${item.romaji}",
+  "english": "${item.english}",
+  "jlpt": "${item.jlpt}"
+}
+\`\`\``;
+
+              issueBody = `${tmpl.header}\n\n**Category:** ${tmpl.category}  \n**Difficulty:** ${common.difficulty}  \n**Estimated Time:** ${tmpl.estimatedTime}\n\n---\n\n### Your Task\n\n${tmpl.taskDescription}\n\n${tmpl.sentenceHeader}\n\n| Japanese | Romaji | English | JLPT |\n|----------|--------|---------|------|\n| **${item.japanese}** | ${item.romaji} | ${item.english} | ${item.jlpt} |\n\n${common.instructionsHeader}\n\n${instructions.slice(0, 5).join('\n')}\n\n${codeBlock}\n\n${instructions.slice(5).join('\n')}\n\n---\n\n${common.footer}`;
+
+              const sentenceIndex = exampleSentences.findIndex(function(e) { return e.id === item.id; });
+              exampleSentences[sentenceIndex].issued = true;
+              fs.writeFileSync(exampleSentencesBacklogPath, JSON.stringify(exampleSentences, null, 2));
+              backlogChanged = true;
+            } else if (nextType === 'commonMistake') {
+              item = commonMistakes.find(function(m) {
+                if (m.issued || m.completed) {
+                  return false;
+                }
+                if (Array.isArray(existingCommonMistakes)) {
+                  const exists = existingCommonMistakes.some(function(em) {
+                    if (!em || typeof em !== 'object') {
+                      return false;
+                    }
+                    return em.wrong === m.wrong && em.correct === m.correct;
+                  });
+                  if (exists) {
+                    const mistakeIdx = commonMistakes.findIndex(function(mi) { return mi.id === m.id; });
+                    commonMistakes[mistakeIdx].completed = true;
+                    backlogChanged = true;
+                    return false;
+                  }
+                }
+                return true;
+              });
+
+              if (!item) {
+                console.log('No more common mistakes available in backlog.');
+                if (backlogChanged) {
+                  fs.writeFileSync(commonMistakesBacklogPath, JSON.stringify(commonMistakes, null, 2));
+                }
+                continue;
+              }
+
+              const duplicateMistake = await hasOpenIssueForQuery(`"Common Learner Mistake" "${item.id}"`);
+              if (duplicateMistake) {
+                const mistakeIdx = commonMistakes.findIndex(function(m) { return m.id === item.id; });
+                commonMistakes[mistakeIdx].issued = true;
+                fs.writeFileSync(commonMistakesBacklogPath, JSON.stringify(commonMistakes, null, 2));
+                backlogChanged = true;
+                continue;
+              }
+
+              const tmpl = t.commonMistake;
+              const common = t.common;
+              issueTitle = tmpl.title
+                .replace('{emoji}', pickEmoji())
+                .replace('{id}', item.id);
+              issueTitle = addTitleAdjectives(issueTitle, tmpl.adjectives);
+
+              const instructions = t.buildInstructions(tmpl.file, tmpl.itemType, tmpl.prTitle).map((instr, i) => `${i + 1}. ${instr.replace(/{id}/g, item.id)}`);
+              const codeBlock = `\`\`\`json
+{
+  "wrong": "${item.wrong}",
+  "correct": "${item.correct}",
+  "explanation": "${item.explanation}"
+}
+\`\`\``;
+
+              issueBody = `${tmpl.header}
+
+**Category:** ${tmpl.category}  
+**Difficulty:** ${common.difficulty}  
+**Estimated Time:** ${tmpl.estimatedTime}
+
+---
+
+### Your Task
+
+${tmpl.taskDescription}
+
+${tmpl.mistakeHeader}
+
+**Wrong:** ${item.wrong}
+
+**Correct:** ${item.correct}
+
+> **Why:** ${item.explanation}
+
+${common.instructionsHeader}
+
+${instructions.slice(0, 5).join('\n')}
+
+${codeBlock}
+
+${instructions.slice(5).join('\n')}
+
+---
+
+${common.footer}`;
+
+              const mistakeIndex = commonMistakes.findIndex(function(m) { return m.id === item.id; });
+              commonMistakes[mistakeIndex].issued = true;
+              fs.writeFileSync(commonMistakesBacklogPath, JSON.stringify(commonMistakes, null, 2));
               backlogChanged = true;
             }
 

@@ -44,6 +44,10 @@ jobs:
             const animeQuotesBacklogPath = 'community/backlog/anime-quotes-backlog.json';
             const idiomsBacklogPath = 'community/backlog/idioms-backlog.json';
             const regionalDialectsBacklogPath = 'community/backlog/regional-dialects-backlog.json';
+            const falseFriendsBacklogPath = 'community/backlog/false-friends-backlog.json';
+            const culturalEtiquetteBacklogPath = 'community/backlog/cultural-etiquette-backlog.json';
+            const exampleSentencesBacklogPath = 'community/backlog/example-sentences-backlog.json';
+            const commonMistakesBacklogPath = 'community/backlog/common-mistakes-backlog.json';
 
             const prTitle = context.payload.pull_request.title;
             const prTitleLower = prTitle.toLowerCase();
@@ -59,8 +63,12 @@ jobs:
             const isAnimeQuoteContribution = prTitleLower.includes('anime quote') || prTitleLower.includes('anime-quote') || prTitleLower.includes('animequote');
             const isIdiomContribution = prTitleLower.includes('idiom');
             const isRegionalDialectContribution = prTitleLower.includes('regional dialect') || prTitleLower.includes('regional-dialect') || prTitleLower.includes('regionaldialect');
+            const isFalseFriendContribution = prTitleLower.includes('false friend') || prTitleLower.includes('false-friend');
+            const isCulturalEtiquetteContribution = prTitleLower.includes('cultural etiquette') || prTitleLower.includes('cultural-etiquette');
+            const isExampleSentenceContribution = prTitleLower.includes('example sentence') || prTitleLower.includes('example-sentence');
+            const isCommonMistakeContribution = prTitleLower.includes('common mistake') || prTitleLower.includes('common-mistake');
 
-            if (!isThemeContribution && !isFactContribution && !isProverbContribution && !isTriviaContribution && !isGrammarContribution && !isAnimeQuoteContribution && !isIdiomContribution && !isRegionalDialectContribution) {
+            if (!isThemeContribution && !isFactContribution && !isProverbContribution && !isTriviaContribution && !isGrammarContribution && !isAnimeQuoteContribution && !isIdiomContribution && !isRegionalDialectContribution && !isFalseFriendContribution && !isCulturalEtiquetteContribution && !isExampleSentenceContribution && !isCommonMistakeContribution) {
               console.log('Not a community contribution PR, skipping');
               core.setOutput('should_commit', 'false');
               return;
@@ -185,6 +193,42 @@ jobs:
                   if (matches.length > 0) {
                     targetIssue = matches[0].number;
                     console.log(`Found matching regional dialect issue: #${targetIssue}`);
+                  }
+                }
+              } else if (isFalseFriendContribution) {
+                const idMatch = prTitle.match(/#(\d+)/);
+                const id = idMatch ? idMatch[1] : null;
+                if (id) {
+                  const matches = await searchOpenCommunityIssues(`"Add Japanese False Friend #${id}"`);
+                  if (matches.length > 0) {
+                    targetIssue = matches[0].number;
+                  }
+                }
+              } else if (isCulturalEtiquetteContribution) {
+                const idMatch = prTitle.match(/#(\d+)/);
+                const id = idMatch ? idMatch[1] : null;
+                if (id) {
+                  const matches = await searchOpenCommunityIssues(`"Add Japanese Cultural Etiquette Tip #${id}"`);
+                  if (matches.length > 0) {
+                    targetIssue = matches[0].number;
+                  }
+                }
+              } else if (isExampleSentenceContribution) {
+                const idMatch = prTitle.match(/#(\d+)/);
+                const id = idMatch ? idMatch[1] : null;
+                if (id) {
+                  const matches = await searchOpenCommunityIssues(`"Add Japanese Example Sentence #${id}"`);
+                  if (matches.length > 0) {
+                    targetIssue = matches[0].number;
+                  }
+                }
+              } else if (isCommonMistakeContribution) {
+                const idMatch = prTitle.match(/#(\d+)/);
+                const id = idMatch ? idMatch[1] : null;
+                if (id) {
+                  const matches = await searchOpenCommunityIssues(`"Add Common Japanese Learner Mistake #${id}"`);
+                  if (matches.length > 0) {
+                    targetIssue = matches[0].number;
                   }
                 }
               }
@@ -374,6 +418,74 @@ jobs:
                       fs.writeFileSync(regionalDialectsBacklogPath, JSON.stringify(regionalDialects, null, 2));
                       needsCommit = true;
                       console.log(`Marked regional dialect #${dialectId} as completed`);
+                    }
+                  }
+                } else if (isFalseFriendContribution) {
+                  const items = JSON.parse(fs.readFileSync(falseFriendsBacklogPath, 'utf8'));
+                  const issueMatch = issueTitle.match(/Add Japanese False Friend\s*#(\d+)/i);
+                  const prMatch = prTitle.match(/#(\d+)/);
+                  const id = issueMatch ? parseInt(issueMatch[1]) : (prMatch ? parseInt(prMatch[1]) : null);
+
+                  if (id !== null) {
+                    const idx = items.findIndex(function(i) { return i.id === id; });
+                    if (idx !== -1) {
+                      items[idx].completed = true;
+                      items[idx].completedBy = prAuthor;
+                      items[idx].completedPR = prNumber;
+                      fs.writeFileSync(falseFriendsBacklogPath, JSON.stringify(items, null, 2));
+                      needsCommit = true;
+                      console.log(`Marked false friend #${id} as completed`);
+                    }
+                  }
+                } else if (isCulturalEtiquetteContribution) {
+                  const items = JSON.parse(fs.readFileSync(culturalEtiquetteBacklogPath, 'utf8'));
+                  const issueMatch = issueTitle.match(/Add Japanese Cultural Etiquette Tip\s*#(\d+)/i);
+                  const prMatch = prTitle.match(/#(\d+)/);
+                  const id = issueMatch ? parseInt(issueMatch[1]) : (prMatch ? parseInt(prMatch[1]) : null);
+
+                  if (id !== null) {
+                    const idx = items.findIndex(function(i) { return i.id === id; });
+                    if (idx !== -1) {
+                      items[idx].completed = true;
+                      items[idx].completedBy = prAuthor;
+                      items[idx].completedPR = prNumber;
+                      fs.writeFileSync(culturalEtiquetteBacklogPath, JSON.stringify(items, null, 2));
+                      needsCommit = true;
+                      console.log(`Marked cultural etiquette #${id} as completed`);
+                    }
+                  }
+                } else if (isExampleSentenceContribution) {
+                  const items = JSON.parse(fs.readFileSync(exampleSentencesBacklogPath, 'utf8'));
+                  const issueMatch = issueTitle.match(/Add Japanese Example Sentence\s*#(\d+)/i);
+                  const prMatch = prTitle.match(/#(\d+)/);
+                  const id = issueMatch ? parseInt(issueMatch[1]) : (prMatch ? parseInt(prMatch[1]) : null);
+
+                  if (id !== null) {
+                    const idx = items.findIndex(function(i) { return i.id === id; });
+                    if (idx !== -1) {
+                      items[idx].completed = true;
+                      items[idx].completedBy = prAuthor;
+                      items[idx].completedPR = prNumber;
+                      fs.writeFileSync(exampleSentencesBacklogPath, JSON.stringify(items, null, 2));
+                      needsCommit = true;
+                      console.log(`Marked example sentence #${id} as completed`);
+                    }
+                  }
+                } else if (isCommonMistakeContribution) {
+                  const items = JSON.parse(fs.readFileSync(commonMistakesBacklogPath, 'utf8'));
+                  const issueMatch = issueTitle.match(/Add Common Japanese Learner Mistake\s*#(\d+)/i);
+                  const prMatch = prTitle.match(/#(\d+)/);
+                  const id = issueMatch ? parseInt(issueMatch[1]) : (prMatch ? parseInt(prMatch[1]) : null);
+
+                  if (id !== null) {
+                    const idx = items.findIndex(function(i) { return i.id === id; });
+                    if (idx !== -1) {
+                      items[idx].completed = true;
+                      items[idx].completedBy = prAuthor;
+                      items[idx].completedPR = prNumber;
+                      fs.writeFileSync(commonMistakesBacklogPath, JSON.stringify(items, null, 2));
+                      needsCommit = true;
+                      console.log(`Marked common mistake #${id} as completed`);
                     }
                   }
                 }
