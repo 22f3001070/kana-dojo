@@ -981,7 +981,9 @@
     "mainColor": "oklch(78.0% 0.160 45.0 / 1)",
     "secondaryColor": "oklch(85.0% 0.120 85.0 / 1)",
     "issued": true,
-    "completed": false
+    "completed": true,
+    "completedBy": "mustafaguler3",
+    "completedPR": 5332
   },
   {
     "id": "autumn-temple",
