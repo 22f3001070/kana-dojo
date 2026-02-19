@@ -46,8 +46,7 @@ const categoryColors: Record<Category, string> = {
     'bg-teal-400 text-(--background-color) border-teal-400 hover:bg-teal-500',
   'study-tips':
     'bg-lime-400 text-(--background-color) border-lime-400 hover:bg-lime-500',
-  jlpt:
-    'bg-red-400 text-(--background-color) border-red-400 hover:bg-red-500',
+  jlpt: 'bg-red-400 text-(--background-color) border-red-400 hover:bg-red-500',
 };
 
 interface CategoryFilterProps {
