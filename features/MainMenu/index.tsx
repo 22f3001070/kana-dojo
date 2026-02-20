@@ -323,7 +323,7 @@ const MainMenu = () => {
         href='https://vercel.com/oss'
         target='_blank'
         rel='noopener noreferrer'
-        className='fixed right-3 bottom-28 z-50 transition-opacity hover:opacity-80 md:right-6 md:bottom-16'
+        className='fixed right-6 bottom-16 z-50 hidden transition-opacity hover:opacity-80 lg:block'
         aria-label='Vercel OSS Program'
       >
         <img
