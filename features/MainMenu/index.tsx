@@ -319,6 +319,19 @@ const MainMenu = () => {
           ))}
         </div>
       </div>
+      <a
+        href='https://vercel.com/oss'
+        target='_blank'
+        rel='noopener noreferrer'
+        className='fixed right-3 bottom-20 z-50 transition-opacity hover:opacity-80 md:right-6 md:bottom-6'
+        aria-label='Vercel OSS Program'
+      >
+        <img
+          alt='Vercel OSS Program'
+          src='https://vercel.com/oss/program-badge.svg'
+          className='h-8 w-auto'
+        />
+      </a>
       {/* {showBanner && (
         <NightlyBanner onSwitch={handleSwitch} onDismiss={handleDismiss} />
       )} */}
