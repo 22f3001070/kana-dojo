@@ -662,7 +662,7 @@
     "romaji": "Toranu tanuki no kawazan'you",
     "english": "Counting a raccoon dog's skins before catching it",
     "meaning": "Don't count your chickens before they hatch",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -671,7 +671,7 @@
     "romaji": "Ishi no ue ni mo san nen",
     "english": "Three years on a stone",
     "meaning": "Perseverance will be rewarded",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -681,7 +681,7 @@
     "english": "After rain, the ground hardens",
     "meaning": "Adversity can strengthen relationships",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 77,
@@ -689,7 +689,7 @@
     "romaji": "Hari no ana kara ten wo nozoku",
     "english": "Peek at the sky through a needle's eye",
     "meaning": "A narrow viewpoint leads to poor judgment",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -698,7 +698,7 @@
     "romaji": "Zen wa isoge",
     "english": "Hurry to do good",
     "meaning": "If it's worth doing, do it at once",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -707,7 +707,7 @@
     "romaji": "Miru wa houraku",
     "english": "Just watching is a pleasure",
     "meaning": "Enjoy observing; you don't always need to participate",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -716,7 +716,7 @@
     "romaji": "Tsuki to suppon",
     "english": "The moon and a turtle",
     "meaning": "Vast difference; not comparable",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -734,7 +734,7 @@
     "romaji": "Idobata kaigi",
     "english": "Well-side conference",
     "meaning": "Neighborhood gossip",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -743,7 +743,7 @@
     "romaji": "Neko ni katsuobushi",
     "english": "Dried bonito to a cat",
     "meaning": "Leave temptation unattended at your own risk",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -753,7 +753,7 @@
     "english": "Poke the bush and bring out a snake",
     "meaning": "Stir up trouble unnecessarily",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 85,
@@ -770,7 +770,7 @@
     "romaji": "Nen ni wa nen wo ireyo",
     "english": "Put care into care",
     "meaning": "Double-check; be extra careful",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -779,7 +779,7 @@
     "romaji": "Koukai saki ni tatazu",
     "english": "Regret does not stand before",
     "meaning": "It's too late for regrets",
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
