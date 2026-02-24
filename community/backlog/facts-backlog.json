@@ -813,12 +813,12 @@
     "id": 136,
     "fact": "Japan has an island dedicated entirely to art museums - Naoshima, where Tadao Ando's architecture blends with nature.",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 137,
     "fact": "The Japanese word 'okashi' (おかしい) means both 'funny' and 'strange' - humor and oddity are deeply connected.",
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
