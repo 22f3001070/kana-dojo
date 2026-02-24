@@ -356,7 +356,7 @@ function TypeModeInput({
         value={userAnswer}
         onChange={e => setUserAnswer(e.target.value)}
         onKeyPress={e => e.key === 'Enter' && onSubmit()}
-        className='w-full rounded-lg border-2 border-(--border-color) bg-(--card-color) p-4 text-center text-lg text-(--secondary-color) focus:border-(--main-color) focus:outline-none'
+        className='w-full rounded-lg border-2 border-(--border-color) bg-(--card-color) p-4 text-center text-lg text-(--secondary-color) outline-none focus:border-(--secondary-color)'
         placeholder={inputPlaceholder}
         autoComplete='off'
         autoFocus
