@@ -27,8 +27,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const path = '.github/templates/messages.cjs';
-            const run = context.payload.workflow_run;
-            const ref = run && run.head_sha ? run.head_sha : context.sha;
+            const workflowRun = context.payload.workflow_run;
+            const ref = workflowRun && workflowRun.head_sha ? workflowRun.head_sha : context.sha;
 
             const { data: file } = await github.rest.repos.getContent({
               owner: context.repo.owner,
@@ -49,16 +49,15 @@ jobs:
             const successT = templates.prCheck.success;
             const failureT = templates.prCheck.failure;
 
-            const run = context.payload.workflow_run;
-            const prs = run.pull_requests || [];
+            const prs = workflowRun.pull_requests || [];
             if (!prs.length) {
               console.log('No pull request associated with this workflow_run');
               return;
             }
 
             const prNumber = prs[0].number;
-            const headSha = run.head_sha;
-            const conclusion = run.conclusion;
+            const headSha = workflowRun.head_sha;
+            const conclusion = workflowRun.conclusion;
 
             const marker = `<!-- pr-quality-check:${headSha} -->`;
 
