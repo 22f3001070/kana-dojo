@@ -268,7 +268,7 @@
     "correct": "会議は三時から始まります。",
     "explanation": "Remove unnecessary particle after から. (Pattern set 2)",
     "id": 34,
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
