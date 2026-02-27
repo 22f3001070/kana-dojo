@@ -11,6 +11,7 @@ import Stats from '@/shared/components/Game/Stats';
 import ClassicSessionSummary from '@/shared/components/Game/ClassicSessionSummary';
 import { useRouter } from '@/core/i18n/routing';
 import { finalizeSession, startSession } from '@/shared/lib/sessionHistory';
+import useClassicSessionStore from '@/shared/store/useClassicSessionStore';
 
 const Game = () => {
   const {
@@ -44,6 +45,9 @@ const Game = () => {
   const [view, setView] = useState<'playing' | 'summary'>('playing');
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessionNonce, setSessionNonce] = useState(0);
+  const setActiveSessionId = useClassicSessionStore(
+    state => state.setActiveSessionId,
+  );
 
   useEffect(() => {
     resetStats();
@@ -56,7 +60,10 @@ const Game = () => {
       dojoType: 'kanji',
       gameMode: gameMode.toLowerCase(),
       route: '/kanji/train',
-    }).then(setSessionId);
+    }).then(id => {
+      setSessionId(id);
+      setActiveSessionId(id);
+    });
     // Intentionally keyed by nonce only to avoid resetting a live session.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionNonce]);
@@ -79,12 +86,14 @@ const Game = () => {
       bestStreak: currentStreak,
       stars,
     });
+    setActiveSessionId(null);
     setView('summary');
   };
 
   const handleNewSession = () => {
     resetStats();
     setSessionId(null);
+    setActiveSessionId(null);
     setView('playing');
     setSessionNonce(prev => prev + 1);
   };

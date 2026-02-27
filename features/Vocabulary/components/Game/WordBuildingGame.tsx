@@ -27,6 +27,7 @@ import {
   useWordBuildingActionKey,
 } from '@/shared/components/Game/wordBuildingShared';
 import WordBuildingTilesGrid from '@/shared/components/Game/WordBuildingTilesGrid';
+import useClassicSessionStore from '@/shared/store/useClassicSessionStore';
 
 const random = new Random();
 const adaptiveSelector = getGlobalAdaptiveSelector();
@@ -58,6 +59,7 @@ const VocabWordBuildingGame = ({
   onCorrect: externalOnCorrect,
   onWrong: externalOnWrong,
 }: VocabWordBuildingGameProps) => {
+  const logAttempt = useClassicSessionStore(state => state.logAttempt);
   // Smart reverse mode - used when not controlled externally
   const {
     isReverse: internalIsReverse,
@@ -354,6 +356,21 @@ const VocabWordBuildingGame = ({
       if (externalIsReverse === undefined) {
         decideNextReverseMode();
       }
+      logAttempt({
+        questionId: questionData.word,
+        questionPrompt: String(
+          questionData.quizType === 'meaning' && isReverse
+            ? questionData.wordObj?.meanings?.[0] ?? questionData.word
+            : questionData.word,
+        ),
+        expectedAnswers: [questionData.correctAnswer],
+        userAnswer: String(selectedTileChar ?? ''),
+        inputKind: 'word_building',
+        isCorrect: true,
+        timeTakenMs: answerTimeMs,
+        optionsShown: Array.from(questionData.allTiles.values()),
+        extra: { isReverse, quizType: questionData.quizType },
+      });
     } else {
       speedStopwatch.reset();
       playErrorTwice();
@@ -376,6 +393,20 @@ const VocabWordBuildingGame = ({
       }
 
       externalOnWrong?.();
+      logAttempt({
+        questionId: questionData.word,
+        questionPrompt: String(
+          questionData.quizType === 'meaning' && isReverse
+            ? questionData.wordObj?.meanings?.[0] ?? questionData.word
+            : questionData.word,
+        ),
+        expectedAnswers: [questionData.correctAnswer],
+        userAnswer: String(selectedTileChar ?? ''),
+        inputKind: 'word_building',
+        isCorrect: false,
+        optionsShown: Array.from(questionData.allTiles.values()),
+        extra: { isReverse, quizType: questionData.quizType },
+      });
     }
   }, [
     placedTileIds,
@@ -397,6 +428,8 @@ const VocabWordBuildingGame = ({
     externalIsReverse,
     decideNextReverseMode,
     recordReverseModeWrong,
+    logAttempt,
+    isReverse,
     addCorrectAnswerTime,
     recordAnswerTime,
     isReverse,
